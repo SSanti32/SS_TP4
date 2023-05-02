@@ -1,4 +1,4 @@
-package Sistema_2;
+package ar.edu.itba.ss.system2;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
