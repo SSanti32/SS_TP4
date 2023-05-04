@@ -48,7 +48,7 @@ public class DampedOscillator {
         return new double[]{updatedR, updatedV};
     }
 
-    public double[] gearPC(double[] r, double step) {
+    public double[] gearPredict(double[] r, double step) {
         double updatedR0 = r[0] + r[1] * step + r[2] * Math.pow(step,2)/2 + r[3] * Math.pow(step,3)/6 + r[4] * Math.pow(step,4)/24 + r[5] * Math.pow(step,5)/120;
         double updatedR1 = r[1] + r[2] * step + r[3] * Math.pow(step,2)/2 + r[4] * Math.pow(step,3)/6 + r[5] * Math.pow(step,4)/24;
         double updatedR2 = r[2] + r[3] * step + r[4] * Math.pow(step,2)/2 + r[5] * Math.pow(step,3)/6;
@@ -56,6 +56,15 @@ public class DampedOscillator {
         double updatedR4 = r[4] + r[5] * step;
         double updatedR5 = r[5];
         return new double[]{updatedR0, updatedR1, updatedR2, updatedR3, updatedR4, updatedR5};
+    }
+
+    public void gearCorrect(double[] r, double deltaR2, double[] alphas, double step) {
+        r[0] += alphas[0] * deltaR2 * 1 / Math.pow(step, 0);
+        r[1] += alphas[1] * deltaR2 * 1 / Math.pow(step, 1);
+        r[2] += alphas[2] * deltaR2 * 2 / Math.pow(step, 2);
+        r[3] += alphas[3] * deltaR2 * 6 / Math.pow(step, 3);
+        r[4] += alphas[4] * deltaR2 * 24 / Math.pow(step, 4);
+        r[5] += alphas[5] * deltaR2 * 120 / Math.pow(step, 5);
     }
 
     public void verletAlgorithm() {
