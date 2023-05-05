@@ -1,13 +1,10 @@
-import java.io.IOException;
-import java.util.Locale;
-
 public class DampedOscillator {
-    private double mass;
-    private double k;
-    private double gamma;
+    private final double mass;
+    private final double k;
+    private final double gamma;
     private double step = 0.5;
-    private double r0;
-    private double v0;
+    private final double r0;
+    private final double v0;
 
     private double t_f = 5;
     private final double amplitude = 1.0;
@@ -42,10 +39,16 @@ public class DampedOscillator {
         return new double[]{updatedR, updatedV};
     }
 
-    private double[] beeman(double r, double v, double amplitude, double prevAmplitude, double nextAmplitude, double step) {
-        double updatedR = r + v * step + 2.0/3.0 * amplitude * step * step - 1.0/6.0 * prevAmplitude * step * step;
-        double updatedV = v + 1.0/3.0 * nextAmplitude + 5.0/6.0 * amplitude - 1.0/6.0 * prevAmplitude * step;
-        return new double[]{updatedR, updatedV};
+    private double beemanR(double r, double v, double amplitude, double prevAmplitude, double step) {
+        return  r + v * step + 2.0/3.0 * amplitude * step * step - 1.0/6.0 * prevAmplitude * step * step;
+    }
+
+    private double beemanV(double r, double v, double amplitude, double prevAmplitude, double nextAmplitude, double step) {
+        return v + 1.0/3.0 * nextAmplitude + 5.0/6.0 * amplitude - 1.0/6.0 * prevAmplitude * step;
+    }
+
+    private double beemanPredictedV(double v, double amplitude, double prevAmplitude, double step) {
+        return v + 3.0/2.0 * amplitude * step - 1.0/2.0 * prevAmplitude * step;
     }
 
     private double[] gearPredict(double[] r, double step) {
@@ -94,12 +97,35 @@ public class DampedOscillator {
         }
     }
 
+    public void beemanAlgorithm() {
+        double[] previous = euler(r0, v0, mass, -step);
+        double prevR = previous[0];
+        double prevV = previous[1];
+        double currentR = r0;
+        double currentV = v0;
+        double nextR, nextV, nextA, prevA, currentA;
+        System.out.println(currentR);
+        for(double t = 0; t < t_f; t += step) {
+            prevA = f(prevR, prevV) / mass;
+            currentA = f(currentR, currentV) / mass;
+            nextR = beemanR(currentR, currentV, currentA, prevA, step);
+            double predV = beemanPredictedV(currentV, currentA, prevA, step);
+            nextA = f(nextR, predV) / mass;
+            nextV = beemanV(currentR, currentV, currentA, prevA, nextA, step);
+            prevR = currentR;
+            currentR = nextR;
+            prevV = currentV;
+            currentV = nextV;
+            System.out.println(currentR);
+        }
+
+    }
+
     public void gearAlgorithm() {
         double[] alphas = {3.0/16.0, 251.0/360.0, 1.0, 11.0/18.0, 1.0/6.0, 1.0/60.0};
-        double currentR = r0;
         double[] r = initializeGear();
         double currentAmp;
-        System.out.println(currentR);
+        System.out.println(r0);
         for(double t = 0; t < t_f; t += step) {
             //Predict, evaluate and correct
             r = gearPredict(r,step);
@@ -116,6 +142,8 @@ public class DampedOscillator {
     public static void main(String[] args) {
         DampedOscillator oscillator = new DampedOscillator(70, 10e4, 100, 1.0, 5);
         oscillator.verletAlgorithm();
+        System.out.println();
+        oscillator.beemanAlgorithm();
         System.out.println();
         oscillator.gearAlgorithm();
     }
