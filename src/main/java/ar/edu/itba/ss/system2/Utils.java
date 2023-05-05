@@ -19,6 +19,26 @@ public class Utils {
     public static Double firstBallInitialPosY = 56.0;
     public static Double topEpsilon = 0.03;
     public static Double bottomEpsilon = 0.02;
+    // TODO: Check different units: [k]=N/m
+    public static double k = Math.pow(10, 4);
+
+    public static double[][] ballsPerturbance = new double[][] {
+            {0.021235598922957385, 0.022694037540199326},
+            {0.023897233284257816, 0.024566358057843015},
+            {0.026337147938454455, 0.02067130411936912},
+            {0.02147620716290274, 0.026869462194055796},
+            {0.023941629628297018, 0.02621201662594255},
+            {0.02976091954892348, 0.021961774142220728},
+            {0.02901048824612499, 0.02047350062876492},
+            {0.0203275406781949, 0.021808879241172623},
+            {0.022556135250976377, 0.024058000120774126},
+            {0.02985562179742978, 0.025997207818308568},
+            {0.024901696307081042, 0.02646666246029257},
+            {0.027475320510322143, 0.022300688806439425},
+            {0.027409308396072314, 0.024363052061283873},
+            {0.022508866493280422, 0.022964725921354075},
+            {0.02595795102960729, 0.020288199160830182}
+    };
 
     // Returns difference of velocities between two balls
     public static double[] getDeltaV(double vx1, double vy1, double vx2,
@@ -141,7 +161,7 @@ public class Utils {
         }
     }
 
-    private static Ball createBall(double relativeBallX, double relativeBallY
+    public static Ball createBall(double relativeBallX, double relativeBallY
             , double sign, int colorR, int colorG, int colorB, String symbol) {
         double hypothenus = 2 * (Utils.particleRadius + Utils.topEpsilon);
         double moveInX = hypothenus * Math.cos(Math.toRadians(30));
@@ -159,4 +179,15 @@ public class Utils {
         ball.setX(ball.getX() + moveInX);
         ball.setY(ball.getY() + moveInY);
     }
+
+    public static void perturbBallsWithFixedEpsilon(List<Ball> balls) {
+        for (int i = 2; i < balls.size(); i++) {
+            double moveInX = Utils.ballsPerturbance[i - 2][0] * (random.nextBoolean() ? 1 : -1);
+            double moveInY = Utils.ballsPerturbance[i - 2][1] * (random.nextBoolean() ? 1 : -1);
+
+            balls.get(i).setX(balls.get(i).getX() + moveInX);
+            balls.get(i).setY(balls.get(i).getY() + moveInY);
+        }
+    }
+
 }
