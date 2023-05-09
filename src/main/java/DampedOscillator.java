@@ -117,6 +117,8 @@ public class DampedOscillator {
         double nextR;
 //        System.out.println(currentR);
         FilesParser.writeOutputFile(fileOutput, currentR);
+        FilesParser.writeOutputFile(analyticalOutput,
+                analyticalSolution(0));
         for (double t = 0; t < t_f; t += step) {
             double[] nextValues = verlet(currentR, prevR, currentV, mass, step);
             nextR = nextValues[0];
@@ -139,6 +141,8 @@ public class DampedOscillator {
         double nextR, nextV, nextA, prevA, currentA;
 //        System.out.println(currentR);
         FilesParser.writeOutputFile(fileOutput, currentR);
+        FilesParser.writeOutputFile(analyticalOutput,
+                analyticalSolution(0));
         for (double t = 0; t < t_f; t += step) {
             prevA = f(prevR, prevV) / mass;
             currentA = f(currentR, currentV) / mass;
@@ -165,6 +169,8 @@ public class DampedOscillator {
         double[] r = initializeGear();
         double currentAmp;
         FilesParser.writeOutputFile(fileOutput, r0);
+        FilesParser.writeOutputFile(analyticalOutput,
+                analyticalSolution(0));
 //        System.out.println(r0);
         for (double t = 0; t < t_f; t += step) {
             //Predict, evaluate and correct
@@ -183,7 +189,7 @@ public class DampedOscillator {
 
     public static void main(String[] args) throws IOException {
         DampedOscillator oscillator =
-                new DampedOscillator(70, 10e4, 100, 0.01, 5);
+                new DampedOscillator(70, 10e4, 100, 0.001, 5);
         File directory = new File(FilesParser.RESOURCES_PATH_SISTEM_1);
         directory.mkdir();
         File verletAlgFile =
