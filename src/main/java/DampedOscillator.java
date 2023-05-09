@@ -27,9 +27,15 @@ public class DampedOscillator {
     }
 
     public double analyticalSolution(double t) {
-        return amplitude * Math.exp(-(gamma / 2 * mass) * t) * Math.cos(
-                Math.pow(k / mass - Math.pow(gamma, 2) / 4 * Math.pow(mass, 2),
-                        0.5) * t);
+        double one = Math.exp(-t * (gamma / (2 * mass)));
+        double two = k / mass;
+        double three = (gamma * gamma) / (4 * mass * mass);
+        double four = Math.pow(two - three, 0.5);
+        double five = Math.cos(four * t);
+        return amplitude * one * five;
+//        return amplitude * Math.exp(-(gamma / 2 * mass) * t) * Math.cos(
+//                Math.pow(k / mass - Math.pow(gamma, 2) / 4 * Math.pow(mass, 2),
+//                        0.5) * t);
     }
 
     public double f(double r, double v) {
