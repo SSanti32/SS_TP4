@@ -16,4 +16,22 @@ public class Main {
     public static void main(String[] args) {
 
     }
+
+    private static void initializeHoles(Ball[] holes) {
+
+        holes[0] = new Ball(0, Utils.tableHeight, 0, 0,
+                Utils.particleRadius * 2, 0, BallType.HOLE, 169, 169, 169, "H");
+        holes[1] = new Ball(Utils.tableWidth / 2, Utils.tableHeight,
+                0, 0, Utils.particleRadius * 2, 0,
+                BallType.HOLE,169, 169, 169,"H");
+        holes[2] = new Ball(Utils.tableWidth, Utils.tableHeight, 0, 0,
+                Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
+        holes[3] = new Ball(0, 0, 0, 0,
+                Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
+        holes[4] = new Ball(Utils.tableWidth / 2, 0, 0, 0,
+                Utils.particleRadius * 2, 0, BallType.HOLE, 169, 169, 169, "H");
+        holes[5] = new Ball(Utils.tableWidth, 0, 0, 0,
+                Utils.particleRadius * 2, 0, BallType.HOLE, 169, 169, 169, "H");
+
+    }
 }

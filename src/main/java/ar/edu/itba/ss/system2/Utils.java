@@ -1,6 +1,7 @@
 package ar.edu.itba.ss.system2;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 // Copia del que teniamos el tp pasado
@@ -20,7 +21,8 @@ public class Utils {
     public static Double topEpsilon = 0.03;
     public static Double bottomEpsilon = 0.02;
     // TODO: Check different units: [k]=N/m
-    public static double k = Math.pow(10, 4);
+    //  -> for now, changed to N/cm => k = 10^4 N/m = 10^2 N/cm
+    public static double k = Math.pow(10, 2);
 
     public static double[][] ballsPerturbance = new double[][] {
             {0.021235598922957385, 0.022694037540199326},
@@ -62,23 +64,82 @@ public class Utils {
         return v1[0] * v2[0] + v1[1] * v2[1];
     }
 
-    public static void initializeHoles(Ball[] holes) {
+    public static double[] getForce(double x1, double y1, double x2,
+                                    double y2, double radius1, double radius2) {
+        double[] deltaR = getDeltaR(x1, y1, x2, y2);
+        double distance = Math.sqrt(Math.pow(deltaR[0], 2) + Math.pow(deltaR[1], 2));
+        double[] force = new double[2];
 
-        holes[0] = new Ball(0, Utils.tableHeight, 0, 0,
-                Utils.particleRadius * 2, 0, BallType.HOLE, 169, 169, 169, "H");
-        holes[1] = new Ball(Utils.tableWidth / 2, Utils.tableHeight,
-                0, 0, Utils.particleRadius * 2, 0,
-                BallType.HOLE,169, 169, 169,"H");
-        holes[2] = new Ball(Utils.tableWidth, Utils.tableHeight, 0, 0,
-                Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
-        holes[3] = new Ball(0, 0, 0, 0,
-                Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
-        holes[4] = new Ball(Utils.tableWidth / 2, 0, 0, 0,
-                Utils.particleRadius * 2, 0, BallType.HOLE, 169, 169, 169, "H");
-        holes[5] = new Ball(Utils.tableWidth, 0, 0, 0,
-                Utils.particleRadius * 2, 0, BallType.HOLE, 169, 169, 169, "H");
+        force[0] = k * (distance - (radius1 + radius2)) * (deltaR[0] / distance);
+        force[1] = k * (distance - (radius1 + radius2)) * (deltaR[1] / distance);
 
+        return force;
     }
+
+    public static double[][] gearInit(double x, double y, double vx, double vy) {
+        double[] rx = new double[6];
+        double[] ry = new double[6];
+
+        rx[0] = x;
+        ry[0] = y;
+
+        rx[1] = vx;
+        ry[1] = vy;
+
+        // TODO: Check if it needs to be calculated
+        rx[2] = 0;
+        ry[2] = 0;
+
+        rx[3] = 0;
+        ry[3] = 0;
+
+        rx[4] = 0;
+        ry[4] = 0;
+
+        rx[5] = 0;
+        ry[5] = 0;
+
+        double[][] r = new double[2][6];
+        r[0] = rx;
+        r[1] = ry;
+
+        return r;
+    }
+    public static double[][] gearPredict(double[][] r, double step) {
+        double[] rxPredict = gearPredictComponent(r[0], step);
+        double[] ryPredict = gearPredictComponent(r[1], step);
+
+        return new double[][] {rxPredict, ryPredict};
+    }
+
+    private static double[] gearPredictComponent(double r[], double step) {
+        double[] rPredict = new double[6];
+
+        rPredict[0] = r[0] + r[1] * step
+                + r[2] * Math.pow(step, 2) / 2
+                + r[3] * Math.pow(step, 3) / 6
+                + r[4] * Math.pow(step, 4) / 24
+                + r[5] * Math.pow(step, 5) / 120;
+
+        rPredict[1] = r[1] + r[2] * step
+                + r[3] * Math.pow(step, 2) / 2
+                + r[4] * Math.pow(step, 3) / 6
+                + r[5] * Math.pow(step, 4) / 24;
+
+        rPredict[2] = r[2] + r[3] * step
+                + r[4] * Math.pow(step, 2) / 2
+                + r[5] * Math.pow(step, 3) / 6;
+
+        rPredict[3] = r[3] + r[4] * step
+                + r[5] * Math.pow(step, 2) / 2;
+
+        rPredict[4] = r[4] + r[5] * step;
+
+        rPredict[5] = r[5];
+
+        return rPredict;
+    }
+
 
     public static void initializeTable(List<Ball> balls,
                                        double whiteBallInitialPosX,
@@ -180,14 +241,8 @@ public class Utils {
         ball.setY(ball.getY() + moveInY);
     }
 
-    public static void perturbBallsWithFixedEpsilon(List<Ball> balls) {
-        for (int i = 2; i < balls.size(); i++) {
-            double moveInX = Utils.ballsPerturbance[i - 2][0] * (random.nextBoolean() ? 1 : -1);
-            double moveInY = Utils.ballsPerturbance[i - 2][1] * (random.nextBoolean() ? 1 : -1);
+    public static void gearPredict(List<Ball> balls, Map<Long, List<double[]>> ballsPosition) {
 
-            balls.get(i).setX(balls.get(i).getX() + moveInX);
-            balls.get(i).setY(balls.get(i).getY() + moveInY);
-        }
     }
 
 }

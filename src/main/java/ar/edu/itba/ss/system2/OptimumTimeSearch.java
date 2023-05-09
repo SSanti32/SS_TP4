@@ -1,28 +1,55 @@
 package ar.edu.itba.ss.system2;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static ar.edu.itba.ss.system2.Utils.createBall;
-import static ar.edu.itba.ss.system2.Utils.perturbBallsWithFixedEpsilon;
 
 public class OptimumTimeSearch {
 
+    private static final Random random = new Random();
     public static final List<Ball> balls = new ArrayList<>();
 
+    // To save all positions through time
+    public static final Map<Long, List<double[]>> ballsPositions = new HashMap<>();
+
     public static final double MAX_TIME = 100;
-    public static final double INTEGRATION_STEP = 2;
+    public static final double k = 2;
+    public static final double INTEGRATION_STEP = Math.pow(10, -k);
     public static void main(String[] args) {
         initializeBallsWithEqualConditions();
+        for (Ball ball : balls) {
+            ballsPositions.put(ball.getId(), new ArrayList<>());
+        }
+
+        simulate();
     }
 
     public static void simulate() {
-        double actualTime = 0;
+        // Save initial positions state
+        Map<Long, double[][]> actualRs = new HashMap<>();
+        for (Ball ball : balls) {
+            double[][] r = Utils.gearInit(ball.getX(), ball.getY(), ball.getVx(), ball.getVy());
+            ballsPositions.get(ball.getId()).add(new double[] {r[0][0], r[1][0]});
+            actualRs.put(ball.getId(), r);
+        }
 
-        while (actualTime < MAX_TIME) {
+        for (double actualTime = 0; actualTime < MAX_TIME; actualTime += INTEGRATION_STEP) {
+            // predict
+            for (Ball ball : balls) {
+                double[][] r = Utils.gearPredict(actualRs.get(ball.getId()), INTEGRATION_STEP);
+                // TODO: Change this
+                ball.setX(r[0][0]);
+                ball.setY(r[1][0]);
+                ball.setVx(r[2][0]);
+                ball.setVy(r[3][0]);
+            }
+
+            // calculate forces
+
+            // correct
+
             // Save the current state of the system
-            // Advance the system to the next state
-            actualTime += Math.pow(10, -INTEGRATION_STEP);
+
         }
     }
 
@@ -74,5 +101,15 @@ public class OptimumTimeSearch {
                 , 128, 128, 0, "Na"));
 
         perturbBallsWithFixedEpsilon(balls);
+    }
+
+    public static void perturbBallsWithFixedEpsilon(List<Ball> balls) {
+        for (int i = 2; i < balls.size(); i++) {
+            double moveInX = Utils.ballsPerturbance[i - 2][0] * (random.nextBoolean() ? 1 : -1);
+            double moveInY = Utils.ballsPerturbance[i - 2][1] * (random.nextBoolean() ? 1 : -1);
+
+            balls.get(i).setX(balls.get(i).getX() + moveInX);
+            balls.get(i).setY(balls.get(i).getY() + moveInY);
+        }
     }
 }
