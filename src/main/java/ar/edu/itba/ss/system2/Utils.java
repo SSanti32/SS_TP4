@@ -22,7 +22,7 @@ public class Utils {
     // TODO: Check different units: [k]=N/m
     public static double k = Math.pow(10, 4);
 
-    public static double[][] ballsPerturbance = new double[][] {
+    public static double[][] ballsPerturbance = new double[][]{
             {0.021235598922957385, 0.022694037540199326},
             {0.023897233284257816, 0.024566358057843015},
             {0.026337147938454455, 0.02067130411936912},
@@ -68,11 +68,11 @@ public class Utils {
                 Utils.particleRadius * 2, 0, BallType.HOLE, 169, 169, 169, "H");
         holes[1] = new Ball(Utils.tableWidth / 2, Utils.tableHeight,
                 0, 0, Utils.particleRadius * 2, 0,
-                BallType.HOLE,169, 169, 169,"H");
+                BallType.HOLE, 169, 169, 169, "H");
         holes[2] = new Ball(Utils.tableWidth, Utils.tableHeight, 0, 0,
-                Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
+                Utils.particleRadius * 2, 0, BallType.HOLE, 169, 169, 169, "H");
         holes[3] = new Ball(0, 0, 0, 0,
-                Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
+                Utils.particleRadius * 2, 0, BallType.HOLE, 169, 169, 169, "H");
         holes[4] = new Ball(Utils.tableWidth / 2, 0, 0, 0,
                 Utils.particleRadius * 2, 0, BallType.HOLE, 169, 169, 169, "H");
         holes[5] = new Ball(Utils.tableWidth, 0, 0, 0,
@@ -133,16 +133,6 @@ public class Utils {
         balls.add(createBall(balls.get(10).getX(), balls.get(10).getY(), -1.0
                 , 128, 128, 0, "Na"));
 
-//        balls.forEach(Sistema_2.Utils::perturbBall);
-//        for (Ball ball : balls) {
-//            if (ball.getX() == whiteBallInitialPosX &&
-//                    ball.getY() == whiteBallInitialPosY &&
-//                    ball.getVx() == whiteBallInitialVelX &&
-//                    ball.getVy() == whiteBallInitialVelY) {
-//                continue;
-//            }
-//            perturbBall(ball);
-//        }
     }
 
     public static void perturbateBalls(List<Ball> balls,
@@ -166,8 +156,10 @@ public class Utils {
         double hypothenus = 2 * (Utils.particleRadius + Utils.topEpsilon);
         double moveInX = hypothenus * Math.cos(Math.toRadians(30));
         double moveInY = hypothenus * Math.sin(Math.toRadians(30));
-        return new Ball(relativeBallX + moveInX, relativeBallY + moveInY * sign, 0, 0,
-                Utils.particleRadius, Utils.particleMass, BallType.BALL, colorR, colorG, colorB, symbol);
+        return new Ball(relativeBallX + moveInX, relativeBallY + moveInY * sign,
+                0, 0,
+                Utils.particleRadius, Utils.particleMass, BallType.BALL, colorR,
+                colorG, colorB, symbol);
     }
 
     private static void perturbBall(Ball ball) {
@@ -182,8 +174,10 @@ public class Utils {
 
     public static void perturbBallsWithFixedEpsilon(List<Ball> balls) {
         for (int i = 2; i < balls.size(); i++) {
-            double moveInX = Utils.ballsPerturbance[i - 2][0] * (random.nextBoolean() ? 1 : -1);
-            double moveInY = Utils.ballsPerturbance[i - 2][1] * (random.nextBoolean() ? 1 : -1);
+            double moveInX = Utils.ballsPerturbance[i - 2][0] *
+                    (random.nextBoolean() ? 1 : -1);
+            double moveInY = Utils.ballsPerturbance[i - 2][1] *
+                    (random.nextBoolean() ? 1 : -1);
 
             balls.get(i).setX(balls.get(i).getX() + moveInX);
             balls.get(i).setY(balls.get(i).getY() + moveInY);
