@@ -4,10 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-// Copia del que teniamos el tp pasado
 public class Utils {
 
-    private static final Random random = new Random();
+    public static final Random random = new Random();
     public static Double tableWidth = 224.0;
     public static Double tableHeight = 112.0;
     public static Double particleMass = 165.0; // gramos
@@ -23,6 +22,7 @@ public class Utils {
     // TODO: Check different units: [k]=N/m
     //  -> for now, changed to N/cm => k = 10^4 N/m = 10^2 N/cm
     public static double k = Math.pow(10, 2);
+    public static double[] alphas = {3.0/16.0, 251.0/360.0, 1.0, 11.0/18.0, 1.0/6.0, 1.0/60.0};
 
     public static double[][] ballsPerturbance = new double[][] {
             {0.021235598922957385, 0.022694037540199326},
@@ -64,7 +64,25 @@ public class Utils {
         return v1[0] * v2[0] + v1[1] * v2[1];
     }
 
-    public static double[] getForce(double x1, double y1, double x2,
+    public static double[] getNetForce(Ball ball, List<Ball> balls, Map<Long, double[][]> predictedRs) {
+        double[] netForceX = new double[2];
+        double[] netForceY = new double[2];
+        double x1 = predictedRs.get(ball.getId())[0][0];
+        double y1 = predictedRs.get(ball.getId())[0][1];
+        double x2, y2;
+        for (Ball b : balls) {
+            if (b.getId() != ball.getId()) {
+                x2 = predictedRs.get(b.getId())[0][0];
+                y2 = predictedRs.get(b.getId())[0][1];
+                double[] force = getForce(x1, y1, x2, y2, ball.getRadius(), b.getRadius());
+                netForceX[0] += force[0];
+                netForceY[0] += force[1];
+            }
+        }
+        return new double[]{netForceX[0], netForceY[0]};
+    }
+
+    private static double[] getForce(double x1, double y1, double x2,
                                     double y2, double radius1, double radius2) {
         double[] deltaR = getDeltaR(x1, y1, x2, y2);
         double distance = Math.sqrt(Math.pow(deltaR[0], 2) + Math.pow(deltaR[1], 2));
@@ -74,6 +92,13 @@ public class Utils {
         force[1] = k * (distance - (radius1 + radius2)) * (deltaR[1] / distance);
 
         return force;
+    }
+
+    public static double[] getDeltaR2(double[] acceleration, double[] predictedAcceleration) {
+        double[] deltaR2 = new double[2];
+        deltaR2[0] = acceleration[0] - predictedAcceleration[0];
+        deltaR2[1] = acceleration[1] - predictedAcceleration[1];
+        return deltaR2;
     }
 
     public static double[][] gearInit(double x, double y, double vx, double vy) {
@@ -140,86 +165,25 @@ public class Utils {
         return rPredict;
     }
 
+    public static void gearCorrect(Ball ball, Map<Long, double[][]> actualRs, double[][] predictedRs, double[] deltaR2, double step) {
+        double[][] correctedR = new double[2][6];
+        correctedR[0] = gearCorrectComponent(ball, predictedRs[0], deltaR2[0], step);
+        correctedR[1] = gearCorrectComponent(ball, predictedRs[1], deltaR2[1], step);
 
-    public static void initializeTable(List<Ball> balls,
-                                       double whiteBallInitialPosX,
-                                       double whiteBallInitialPosY,
-                                       double whiteBallInitialVelX,
-                                       double whiteBallInitialVelY,
-                                       double firstBallInitialPosX,
-                                       double firstBallInitialPosY) {
-
-        // white ball
-        balls.add(new Ball(whiteBallInitialPosX, whiteBallInitialPosY,
-                whiteBallInitialVelX, whiteBallInitialVelY,
-                Utils.particleRadius, Utils.particleMass, BallType.BALL, 255,
-                255, 255, "He"));
-
-        // triangle
-        balls.add(new Ball(firstBallInitialPosX, firstBallInitialPosY, 0,
-                0, Utils.particleRadius, Utils.particleMass, BallType.BALL,
-                255, 255, 0, "Li"));
-        balls.add(createBall(balls.get(1).getX(), balls.get(1).getY(), 1.0, 0
-                , 0, 255, "Be"));
-        balls.add(createBall(balls.get(1).getX(), balls.get(1).getY(), -1.0,
-                255, 0, 0, "B"));
-        balls.add(createBall(balls.get(2).getX(), balls.get(2).getY(), 1.0, 128,
-                0, 128, "C"));
-        balls.add(createBall(balls.get(2).getX(), balls.get(2).getY(), -1.0, 0
-                , 0, 0, "N"));
-        balls.add(
-                createBall(balls.get(3).getX(), balls.get(3).getY(), -1.0, 255,
-                        165, 0, "O"));
-        balls.add(createBall(balls.get(4).getX(), balls.get(4).getY(), 1.0, 0,
-                128, 0, "F"));
-        balls.add(
-                createBall(balls.get(4).getX(), balls.get(4).getY(), -1.0, 165,
-                        42, 42, "Ne"));
-        balls.add(
-                createBall(balls.get(5).getX(), balls.get(5).getY(), -1.0, 139,
-                        69, 19, "Na"));
-        balls.add(
-                createBall(balls.get(6).getX(), balls.get(6).getY(), -1.0, 173,
-                        255, 47, "Fe"));
-        balls.add(createBall(balls.get(7).getX(), balls.get(7).getY(), 1.0, 173,
-                216, 230, "Co"));
-        balls.add(
-                createBall(balls.get(7).getX(), balls.get(7).getY(), -1.0, 199,
-                        21, 133, "Ni"));
-        balls.add(
-                createBall(balls.get(8).getX(), balls.get(8).getY(), -1.0, 139,
-                        0, 0, "Cu"));
-        balls.add(createBall(balls.get(9).getX(), balls.get(9).getY(), -1.0, 34,
-                139, 34, "Zn"));
-        balls.add(createBall(balls.get(10).getX(), balls.get(10).getY(), -1.0
-                , 128, 128, 0, "Na"));
-
-//        balls.forEach(Sistema_2.Utils::perturbBall);
-//        for (Ball ball : balls) {
-//            if (ball.getX() == whiteBallInitialPosX &&
-//                    ball.getY() == whiteBallInitialPosY &&
-//                    ball.getVx() == whiteBallInitialVelX &&
-//                    ball.getVy() == whiteBallInitialVelY) {
-//                continue;
-//            }
-//            perturbBall(ball);
-//        }
+        actualRs.put(ball.getId(), correctedR);
     }
 
-    public static void perturbateBalls(List<Ball> balls,
-                                       double whiteBallInitialPosX,
-                                       double whiteBallInitialPosY,
-                                       double whiteBallInitialVelX,
-                                       double whiteBallInitialVelY) {
-        for (Ball ball : balls) {
-            if (ball.getX() == whiteBallInitialPosX &&
-                    ball.getY() == whiteBallInitialPosY &&
-                    ball.getVx() == whiteBallInitialVelX &&
-                    ball.getVy() == whiteBallInitialVelY) {
-                continue;
-            }
-            perturbBall(ball);
-        }
+    private static double[] gearCorrectComponent(Ball ball, double[] predictedComponentRs, double deltaComponentR2, double step) {
+        double[] correctedR = new double[6];
+
+        correctedR[0] = predictedComponentRs[0] + alphas[0] * deltaComponentR2;
+        correctedR[1] = predictedComponentRs[1] + alphas[1] * deltaComponentR2 * (1 / Math.pow(step, 1));
+        correctedR[2] = predictedComponentRs[2] + alphas[2] * deltaComponentR2 * (1 / Math.pow(step, 2));
+        correctedR[3] = predictedComponentRs[3] + alphas[3] * deltaComponentR2 * (1 / Math.pow(step, 3));
+        correctedR[4] = predictedComponentRs[4] + alphas[4] * deltaComponentR2 * (1 / Math.pow(step, 4));
+        correctedR[5] = predictedComponentRs[5] + alphas[5] * deltaComponentR2 * (1 / Math.pow(step, 5));
+
+        return correctedR;
     }
 
     public static Ball createBall(double relativeBallX, double relativeBallY
@@ -229,20 +193,6 @@ public class Utils {
         double moveInY = hypothenus * Math.sin(Math.toRadians(30));
         return new Ball(relativeBallX + moveInX, relativeBallY + moveInY * sign, 0, 0,
                 Utils.particleRadius, Utils.particleMass, BallType.BALL, colorR, colorG, colorB, symbol);
-    }
-
-    private static void perturbBall(Ball ball) {
-        double epsilon = bottomEpsilon +
-                (topEpsilon - bottomEpsilon) * random.nextDouble();
-        double moveInX = epsilon * (random.nextBoolean() ? 1 : -1);
-        double moveInY = epsilon * (random.nextBoolean() ? 1 : -1);
-
-        ball.setX(ball.getX() + moveInX);
-        ball.setY(ball.getY() + moveInY);
-    }
-
-    public static void gearPredict(List<Ball> balls, Map<Long, List<double[]>> ballsPosition) {
-
     }
 
 }

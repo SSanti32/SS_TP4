@@ -25,8 +25,12 @@ public class OptimumTimeSearch {
     }
 
     public static void simulate() {
-        // Save initial positions state
         Map<Long, double[][]> actualRs = new HashMap<>();
+        Map<Long, double[][]> predictedRs = new HashMap<>();
+        Map<Long, double[]> forces = new HashMap<>();
+        Map<Long, double[]> deltaR2s = new HashMap<>();
+
+        // Save initial positions state
         for (Ball ball : balls) {
             double[][] r = Utils.gearInit(ball.getX(), ball.getY(), ball.getVx(), ball.getVy());
             ballsPositions.get(ball.getId()).add(new double[] {r[0][0], r[1][0]});
@@ -37,23 +41,37 @@ public class OptimumTimeSearch {
             // predict
             for (Ball ball : balls) {
                 double[][] r = Utils.gearPredict(actualRs.get(ball.getId()), INTEGRATION_STEP);
-                // TODO: Change this
-                ball.setX(r[0][0]);
-                ball.setY(r[1][0]);
-                ball.setVx(r[2][0]);
-                ball.setVy(r[3][0]);
+
+                predictedRs.put(ball.getId(), r);
             }
 
             // calculate forces
+            for (Ball ball : balls) {
+                forces.put(ball.getId(), Utils.getNetForce(ball, balls, predictedRs));
+                deltaR2s.put(ball.getId(),
+                        Utils.getDeltaR2(forces.get(
+                                ball.getId()),
+                                new double[] {predictedRs.get(ball.getId())[0][2], predictedRs.get(ball.getId())[1][2]}));
+            }
 
             // correct
+            for (Ball ball : balls) {
+                Utils.gearCorrect(ball, actualRs, predictedRs.get(ball.getId()), deltaR2s.get(ball.getId()),INTEGRATION_STEP);
+            }
 
             // Save the current state of the system
+            for (Ball ball : balls) {
+                ballsPositions.get(ball.getId()).add(new double[] {actualRs.get(ball.getId())[0][0], actualRs.get(ball.getId())[1][0]});
+            }
 
+            // empty predictedRs
+            predictedRs.clear();
+            forces.clear();
+            deltaR2s.clear();
         }
     }
 
-    public static void initializeBallsWithEqualConditions() {
+    private static void initializeBallsWithEqualConditions() {
         // white ball
         balls.add(new Ball(Utils.whiteBallInitialPosX, Utils.whiteBallInitialPosY,
                 Utils.whiteBallInitialVelX, Utils.whiteBallInitialVelY,
