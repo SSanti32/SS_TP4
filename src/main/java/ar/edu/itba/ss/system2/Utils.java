@@ -167,13 +167,19 @@ public class Utils {
 
     public static void gearCorrect(Ball ball, Map<Long, double[][]> actualRs, double[][] predictedRs, double[] deltaR2, double step) {
         double[][] correctedR = new double[2][6];
-        correctedR[0] = gearCorrectComponent(ball, predictedRs[0], deltaR2[0], step);
-        correctedR[1] = gearCorrectComponent(ball, predictedRs[1], deltaR2[1], step);
+        correctedR[0] = gearCorrectComponent(predictedRs[0], deltaR2[0], step);
+        correctedR[1] = gearCorrectComponent(predictedRs[1], deltaR2[1], step);
 
         actualRs.put(ball.getId(), correctedR);
+
+        ball.setX(correctedR[0][0]);
+        ball.setY(correctedR[1][0]);
+
+        ball.setVx(correctedR[0][1]);
+        ball.setVy(correctedR[1][1]);
     }
 
-    private static double[] gearCorrectComponent(Ball ball, double[] predictedComponentRs, double deltaComponentR2, double step) {
+    private static double[] gearCorrectComponent(double[] predictedComponentRs, double deltaComponentR2, double step) {
         double[] correctedR = new double[6];
 
         correctedR[0] = predictedComponentRs[0] + alphas[0] * deltaComponentR2;

@@ -1,5 +1,6 @@
 package ar.edu.itba.ss.system2;
 
+import java.io.File;
 import java.util.*;
 
 import static ar.edu.itba.ss.system2.Utils.createBall;
@@ -15,6 +16,10 @@ public class OptimumTimeSearch {
     public static final double MAX_TIME = 100;
     public static final double k = 2;
     public static final double INTEGRATION_STEP = Math.pow(10, -k);
+    public static final String FILENAME = "animation-1-step" + k + ".txt";
+    public final static String RESOURCES_PATH_SISTEM = "src/main/java/resources/";
+
+
     public static void main(String[] args) {
         initializeBallsWithEqualConditions();
         for (Ball ball : balls) {
@@ -29,12 +34,16 @@ public class OptimumTimeSearch {
         Map<Long, double[][]> predictedRs = new HashMap<>();
         Map<Long, double[]> forces = new HashMap<>();
         Map<Long, double[]> deltaR2s = new HashMap<>();
+        int i = 0;
+
+        File animationFile = new File(RESOURCES_PATH_SISTEM + FILENAME);
 
         // Save initial positions state
         for (Ball ball : balls) {
             double[][] r = Utils.gearInit(ball.getX(), ball.getY(), ball.getVx(), ball.getVy());
             ballsPositions.get(ball.getId()).add(new double[] {r[0][0], r[1][0]});
             actualRs.put(ball.getId(), r);
+            FilesGenerator.writeAnimationFile(FILENAME, i, balls);
         }
 
         for (double actualTime = 0; actualTime < MAX_TIME; actualTime += INTEGRATION_STEP) {
@@ -68,6 +77,7 @@ public class OptimumTimeSearch {
             predictedRs.clear();
             forces.clear();
             deltaR2s.clear();
+            FilesGenerator.writeAnimationFile(FILENAME, ++i, balls);
         }
     }
 
