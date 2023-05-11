@@ -8,11 +8,10 @@ public class DampedOscillator {
     private final double mass;
     private final double k;
     private final double gamma;
-    private double step = 0.5;
+    private double step;
     private final double r0;
     private final double v0;
-
-    private double t_f = 5;
+    private double t_f;
     private final double amplitude = 1.0;
 
     public DampedOscillator(double mass, double k, double gamma, double step,
@@ -153,8 +152,8 @@ public class DampedOscillator {
             currentV = nextV;
 //            System.out.println(currentR);
             FilesParser.writeOutputFile(fileOutput, currentR);
-            FilesParser.writeOutputFile(analyticalOutput,
-                    analyticalSolution(t));
+//            FilesParser.writeOutputFile(analyticalOutput,
+//                    analyticalSolution(t));
         }
 
     }
@@ -177,8 +176,8 @@ public class DampedOscillator {
             double deltaR2 = deltaAmp * (step * step) / 2;
             gearCorrect(r, deltaR2, alphas, step);
             FilesParser.writeOutputFile(fileOutput, r[0]);
-            FilesParser.writeOutputFile(analyticalOutput,
-                    analyticalSolution(t));
+//            FilesParser.writeOutputFile(analyticalOutput,
+//                  analyticalSolution(t));
 //            System.out.println(r[0]);
         }
     }
@@ -186,7 +185,7 @@ public class DampedOscillator {
 
     public static void main(String[] args) throws IOException {
         DampedOscillator oscillator =
-                new DampedOscillator(70, 10e4, 100, 0.001, 5);
+                new DampedOscillator(70, 10e4, 100, 0.000001, 5);
         File directory = new File(FilesParser.RESOURCES_PATH_SISTEM_1);
         directory.mkdir();
         File verletAlgFile =
