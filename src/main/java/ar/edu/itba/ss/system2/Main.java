@@ -8,7 +8,6 @@ import static ar.edu.itba.ss.system2.Utils.createBall;
 
 public class Main {
 
-    private static PriorityQueue<Event> events;
     private static double currentTime = 0.0;
     private static Ball[] holes = new Ball[6];
     private static final List<Ball> balls = new ArrayList<>();
