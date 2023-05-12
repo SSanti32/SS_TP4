@@ -15,6 +15,7 @@ public class FilesGenerator {
             writeAnimationFileLines(time, writer, ballsList);
         } catch (Exception e) {
             System.err.println("Error while writing animation file");
+            System.out.println(e);
         }
     }
 

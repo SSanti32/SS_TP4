@@ -1,6 +1,5 @@
 package ar.edu.itba.ss.system2;
 
-import java.io.File;
 import java.util.*;
 
 import static ar.edu.itba.ss.system2.Utils.createBall;
@@ -22,6 +21,10 @@ public class OptimumTimeSearch {
 
     public static void main(String[] args) {
         initializeBallsWithEqualConditions();
+
+        balls.forEach(ball -> {
+            System.out.println(ball.getId());
+        });
         for (Ball ball : balls) {
             ballsPositions.put(ball.getId(), new ArrayList<>());
         }
@@ -30,53 +33,30 @@ public class OptimumTimeSearch {
     }
 
     public static void simulate() {
-        Map<Long, double[][]> actualRs = new HashMap<>();
-        Map<Long, double[][]> predictedRs = new HashMap<>();
-        Map<Long, double[]> forces = new HashMap<>();
-        Map<Long, double[]> deltaR2s = new HashMap<>();
         int i = 0;
-
-        File animationFile = new File(RESOURCES_PATH_SISTEM + FILENAME);
-
-        // Save initial positions state
-        for (Ball ball : balls) {
-            double[][] r = Utils.gearInit(ball.getX(), ball.getY(), ball.getVx(), ball.getVy());
-            ballsPositions.get(ball.getId()).add(new double[] {r[0][0], r[1][0]});
-            actualRs.put(ball.getId(), r);
-            FilesGenerator.writeAnimationFile(FILENAME, i, balls);
-        }
+        FilesGenerator.writeAnimationFile(FILENAME, i, balls);
 
         for (double actualTime = 0; actualTime < MAX_TIME; actualTime += INTEGRATION_STEP) {
             // predict
             for (Ball ball : balls) {
-                double[][] r = Utils.gearPredict(actualRs.get(ball.getId()), INTEGRATION_STEP);
-
-                predictedRs.put(ball.getId(), r);
+                ball.gearPredict(INTEGRATION_STEP);
             }
 
             // calculate forces
             for (Ball ball : balls) {
-                forces.put(ball.getId(), Utils.getNetForce(ball, balls, predictedRs));
-                deltaR2s.put(ball.getId(),
-                        Utils.getDeltaR2(forces.get(
-                                ball.getId()),
-                                new double[] {predictedRs.get(ball.getId())[0][2], predictedRs.get(ball.getId())[1][2]}));
+                ball.calculateNetForce(balls);
             }
 
             // correct
             for (Ball ball : balls) {
-                Utils.gearCorrect(ball, actualRs, predictedRs.get(ball.getId()), deltaR2s.get(ball.getId()),INTEGRATION_STEP);
+                ball.gearCorrect(INTEGRATION_STEP);
             }
 
             // Save the current state of the system
             for (Ball ball : balls) {
-                ballsPositions.get(ball.getId()).add(new double[] {actualRs.get(ball.getId())[0][0], actualRs.get(ball.getId())[1][0]});
+                ballsPositions.get(ball.getId()).add(new double[] {ball.getActualR()[0][0], ball.getActualR()[1][0]});
             }
 
-            // empty predictedRs
-            predictedRs.clear();
-            forces.clear();
-            deltaR2s.clear();
             FilesGenerator.writeAnimationFile(FILENAME, ++i, balls);
         }
     }
