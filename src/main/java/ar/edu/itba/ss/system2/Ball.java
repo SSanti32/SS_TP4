@@ -11,8 +11,14 @@ public class Ball {
     private double y;
     private double vx;
     private double vy;
-    private double[][] actualR;
-    private double[][] predictedR;
+    private double ax = 0;
+    private double ay = 0;
+    private double r3x = 0;
+    private double r3y = 0;
+    private double r4x = 0;
+    private double r4y = 0;
+    private double r5x = 0;
+    private double r5y = 0;
     private double[] forces;
 
     private final double radius;
@@ -31,17 +37,12 @@ public class Ball {
                 int colorB, String symbol) {
         this.id = ID_GENERATOR.getAndIncrement();
 
+        this.x = x;
+        this.y = y;
+
         this.vx = vx;
         this.vy = vy;
 
-        this.actualR = new double[][] {
-                {x, vx, 0, 0, 0, 0},
-                {y, vy, 0, 0, 0, 0}
-        };
-        this.predictedR = new double[][] {
-                {0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0}
-        };
         this.forces = new double[] {0, 0};
         this.radius = radius;
         this.mass = mass;
@@ -71,12 +72,12 @@ public class Ball {
 
     public void setX(double x) {
 //        this.x = x;
-        this.actualR[0][0] = x;
+        this.x = x;
     }
 
     public void setY(double y) {
 //        this.y = y;
-        this.actualR[1][0] = y;
+        this.y = y;
     }
 
     public long getId() {
@@ -84,27 +85,19 @@ public class Ball {
     }
 
     public double getX() {
-        return actualR[0][0];
+        return x;
     }
 
     public double getY() {
-        return actualR[1][0];
+        return y;
     }
 
     public double getVx() {
-        return actualR[0][1];
+        return vx;
     }
 
     public double getVy() {
-        return actualR[1][1];
-    }
-
-    public double[][] getActualR() {
-        return actualR;
-    }
-
-    public double[][] getPredictedR() {
-        return predictedR;
+        return vy;
     }
 
     public double[] getForces() {
@@ -128,41 +121,24 @@ public class Ball {
     }
 
     public void gearPredict(double step) {
-        double[] rxPredict = gearPredictComponent(this.actualR[0], step);
-        double[] ryPredict = gearPredictComponent(this.actualR[1], step);
+        this.x = this.x + this.vx * step + this.ax * Math.pow(step, 2) / 2 + this.r3x * Math.pow(step, 3) / 6 + this.r4x * Math.pow(step, 4) / 24 + this.r5x * Math.pow(step, 5) / 120;
+        this.y = this.y + this.vy * step + this.ay * Math.pow(step, 2) / 2 + this.r3y * Math.pow(step, 3) / 6 + this.r4y * Math.pow(step, 4) / 24 + this.r5y * Math.pow(step, 5) / 120;
 
-        this.predictedR = new double[][] {rxPredict, ryPredict};
+        this.vx = this.vx + this.ax * step + this.r3x * Math.pow(step, 2) / 2 + this.r4x * Math.pow(step, 3) / 6 + this.r5x * Math.pow(step, 4) / 24;
+        this.vy = this.vy + this.ay * step + this.r3y * Math.pow(step, 2) / 2 + this.r4y * Math.pow(step, 3) / 6 + this.r5y * Math.pow(step, 4) / 24;
+
+        this.ax = this.ax + this.r3x * step + this.r4x * Math.pow(step, 2) / 2 + this.r5x * Math.pow(step, 3) / 6;
+        this.ay = this.ay + this.r3y * step + this.r4y * Math.pow(step, 2) / 2 + this.r5y * Math.pow(step, 3) / 6;
+
+        this.r3x = this.r3x + this.r4x * step + this.r5x * Math.pow(step, 2) / 2;
+        this.r3y = this.r3y + this.r4y * step + this.r5y * Math.pow(step, 2) / 2;
+
+        this.r4x = this.r4x + this.r5x * step;
+        this.r4y = this.r4y + this.r5y * step;
+
+        // Skip last step of r5x and r5y as it is assigning self
     }
 
-    private double[] gearPredictComponent(double r[], double step) {
-        double[] rPredict = new double[6];
-
-        rPredict[0] = r[0] + r[1] * step
-                + r[2] * Math.pow(step, 2) / 2
-                + r[3] * Math.pow(step, 3) / 6
-                + r[4] * Math.pow(step, 4) / 24
-                + r[5] * Math.pow(step, 5) / 120;
-
-        rPredict[1] = r[1] + r[2] * step
-                + r[3] * Math.pow(step, 2) / 2
-                + r[4] * Math.pow(step, 3) / 6
-                + r[5] * Math.pow(step, 4) / 24;
-
-        rPredict[2] = r[2] + r[3] * step
-                + r[4] * Math.pow(step, 2) / 2
-                + r[5] * Math.pow(step, 3) / 6;
-
-        rPredict[3] = r[3] + r[4] * step
-                + r[5] * Math.pow(step, 2) / 2;
-
-        rPredict[4] = r[4] + r[5] * step;
-
-        rPredict[5] = r[5];
-
-        return rPredict;
-    }
-
-    // TODO: Take into account walls
     public void calculateNetForce(List<Ball> balls) {
         double[] netForce = new double[] {0, 0};
 
@@ -177,6 +153,24 @@ public class Ball {
             netForce[1] += force[1];
         }
 
+        // Calculate forces with vertical walls
+        if (this.x - this.radius <= 0) {
+            netForce[0] += Utils.k * this.x;
+        }
+
+        if (this.x + this.radius >= Utils.tableWidth) {
+            netForce[0] -= Utils.k * (this.x - Utils.tableWidth);
+        }
+
+        // Calculate forces with horizontal walls
+        if (this.y - this.radius <= 0) {
+            netForce[1] += Utils.k * this.y;
+        }
+
+        if (this.y + this.radius >= Utils.tableHeight) {
+            netForce[1] -= Utils.k * (this.y - Utils.tableHeight);
+        }
+
         this.forces = netForce;
     }
 
@@ -184,31 +178,38 @@ public class Ball {
                                      double y2, double radius1, double radius2) {
         double[] deltaR = Utils.getDeltaR(x1, y1, x2, y2);
         double distance = Math.sqrt(Math.pow(deltaR[0], 2) + Math.pow(deltaR[1], 2));
-        double[] force = new double[2];
 
-        force[0] = Utils.k * (distance - (radius1 + radius2)) * (deltaR[0] / distance);
-        force[1] = Utils.k * (distance - (radius1 + radius2)) * (deltaR[1] / distance);
+        // return 0 if balls do not collide
+        if (distance > radius1 + radius2) {
+            return new double[] {0, 0};
+        }
 
-        return force;
+        double forceX = Utils.k * (distance - (radius1 + radius2)) * (deltaR[0] / distance);
+        double forceY = Utils.k * (distance - (radius1 + radius2)) * (deltaR[1] / distance);
+
+        return new double[] {forceX, forceY};
     }
 
     public void gearCorrect(double integrationStep) {
         double[] deltaR2 = calculateDeltaR2(integrationStep);
-        this.actualR[0] = gearCorrectComponent(this.predictedR[0], deltaR2[0], integrationStep);
-        this.actualR[1] = gearCorrectComponent(this.predictedR[1], deltaR2[1], integrationStep);
-    }
 
-    private static double[] gearCorrectComponent(double[] predictedComponentRs, double deltaComponentR2, double step) {
-        double[] correctedR = new double[6];
+        this.x = this.x + Utils.alphas[0] * deltaR2[0];
+        this.y = this.y + Utils.alphas[0] * deltaR2[1];
 
-        correctedR[0] = predictedComponentRs[0] + Utils.alphas[0] * deltaComponentR2;
-        correctedR[1] = predictedComponentRs[1] + Utils.alphas[1] * deltaComponentR2 * (1 / Math.pow(step, 1));
-        correctedR[2] = predictedComponentRs[2] + Utils.alphas[2] * deltaComponentR2 * (2 / Math.pow(step, 2));
-        correctedR[3] = predictedComponentRs[3] + Utils.alphas[3] * deltaComponentR2 * (6 / Math.pow(step, 3));
-        correctedR[4] = predictedComponentRs[4] + Utils.alphas[4] * deltaComponentR2 * (24 / Math.pow(step, 4));
-        correctedR[5] = predictedComponentRs[5] + Utils.alphas[5] * deltaComponentR2 * (120 / Math.pow(step, 5));
+        this.vx = this.vx + Utils.alphas[1] * deltaR2[0] * (1 / Math.pow(integrationStep, 1));
+        this.vy = this.vy + Utils.alphas[1] * deltaR2[1] * (1 / Math.pow(integrationStep, 1));
 
-        return correctedR;
+        this.ax = this.ax + Utils.alphas[2] * deltaR2[0] * (2 / Math.pow(integrationStep, 2));
+        this.ay = this.ay + Utils.alphas[2] * deltaR2[1] * (2 / Math.pow(integrationStep, 2));
+
+        this.r3x = this.r3x + Utils.alphas[3] * deltaR2[0] * (6 / Math.pow(integrationStep, 3));
+        this.r3y = this.r3y + Utils.alphas[3] * deltaR2[1] * (6 / Math.pow(integrationStep, 3));
+
+        this.r4x = this.r4x + Utils.alphas[4] * deltaR2[0] * (24 / Math.pow(integrationStep, 4));
+        this.r4y = this.r4y + Utils.alphas[4] * deltaR2[1] * (24 / Math.pow(integrationStep, 4));
+
+        this.r5x = this.r5x + Utils.alphas[5] * deltaR2[0] * (120 / Math.pow(integrationStep, 5));
+        this.r5y = this.r5y + Utils.alphas[5] * deltaR2[1] * (120 / Math.pow(integrationStep, 5));
     }
 
     private double[] calculateDeltaR2(double step) {
@@ -216,8 +217,8 @@ public class Ball {
 
         double factor = Math.pow(step, 2) / 2;
 
-        deltaR2[0] = (this.forces[0] - predictedR[0][2]) * factor;
-        deltaR2[1] = (this.forces[1] - predictedR[1][2]) * factor;
+        deltaR2[0] = (this.forces[0] / this.mass - this.ax) * factor;
+        deltaR2[1] = (this.forces[1] / this.mass - this.ay) * factor;
 
         return deltaR2;
     }

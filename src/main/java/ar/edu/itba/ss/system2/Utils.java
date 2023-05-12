@@ -7,21 +7,21 @@ import java.util.Random;
 public class Utils {
 
     public static final Random random = new Random();
-    public static Double tableWidth = 224.0;
-    public static Double tableHeight = 112.0;
+    public static Double tableWidth = 224.0/100;
+    public static Double tableHeight = 112.0/100;
     public static Double particleMass = 165.0; // gramos
-    public static Double particleRadius = 5.7 / 2;
-    public static Double whiteBallInitialPosX = 56.0;
-    public static Double whiteBallInitialPosY = 56.0;
-    public static Double whiteBallInitialVelX = 200.0;
+    public static Double particleRadius = (5.7 / 2)/100;
+    public static Double whiteBallInitialPosX = 56.0/100;
+    public static Double whiteBallInitialPosY = 56.0/100;
+    public static Double whiteBallInitialVelX = 2.0;
     public static Double whiteBallInitialVelY = 0.0;
-    public static Double firstBallInitialPosX = 168.0;
-    public static Double firstBallInitialPosY = 56.0;
-    public static Double topEpsilon = 0.03;
-    public static Double bottomEpsilon = 0.02;
+    public static Double firstBallInitialPosX = 168.0/100;
+    public static Double firstBallInitialPosY = 56.0/100;
+    public static Double topEpsilon = 0.03/100;
+    public static Double bottomEpsilon = 0.02/100;
     // TODO: Check different units: [k]=N/m
     //  -> for now, changed to N/cm => k = 10^4 N/m = 10^2 N/cm
-    public static double k = Math.pow(10, 2);
+    public static double k = Math.pow(10, 4);
     public static double[] alphas = {3.0/20.0, 251.0/360.0, 1.0, 11.0/18.0, 1.0/6.0, 1.0/60.0};
 
     public static double[][] ballsPerturbance = new double[][] {
