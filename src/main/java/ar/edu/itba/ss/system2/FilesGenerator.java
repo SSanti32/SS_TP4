@@ -9,6 +9,7 @@ import java.util.Map;
 
 public class FilesGenerator {
 
+    public final static String RESOURCES_PATH = "src/main/resources/";
 
     public static void writeAnimationFile(String fileFullPath, int time,
                                           List<Ball> ballsList,
@@ -79,5 +80,12 @@ public class FilesGenerator {
         } catch (Exception e) {
             System.err.println("Error while writing animation file");
         }
+    }
+
+    public static void writeTimeFile(double time, String fileName) throws IOException {
+        File timeFile = new File(fileName);
+        FileWriter fileWriter = new FileWriter(timeFile, true);
+        fileWriter.write(time + "\n");
+        fileWriter.close();
     }
 }

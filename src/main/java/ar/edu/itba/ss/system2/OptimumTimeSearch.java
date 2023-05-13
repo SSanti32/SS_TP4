@@ -24,11 +24,6 @@ public class OptimumTimeSearch {
     public static void main(String[] args) {
         initializeBallsWithEqualConditions();
 
-        // print positions in holes
-//        for (Ball ball : balls) {
-//            System.out.println(ball.getId() + " " + ball.getX() + " " + ball.getY());
-//        }
-
         for (Ball ball : balls) {
             ballsPositions.put(ball.getId(), new ArrayList<>());
             ballsPositions.get(ball.getId()).add(new double[] {ball.getX(), ball.getY()});

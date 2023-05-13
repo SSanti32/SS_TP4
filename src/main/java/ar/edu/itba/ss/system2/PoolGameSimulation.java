@@ -1,5 +1,6 @@
 package ar.edu.itba.ss.system2;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,7 +18,7 @@ public class PoolGameSimulation {
     public static final double k = 3;
     public static final double INTEGRATION_STEP = Math.pow(10, -k);
     public static final String FILENAME = "animation-2-step" + k + ".txt";
-    public static final String POSITIONS_FILENAME = "positions-2-step" + k + ".txt";
+    public static final String TIME_FILENAME = "time-2-step" + k + ".txt";
     public final static String RESOURCES_PATH_SISTEM = "src/main/java/resources/";
 
 
@@ -41,7 +42,6 @@ public class PoolGameSimulation {
         double time = 0;
         FilesGenerator.writeAnimationFile(FILENAME, i, balls, List.of(holes));
 
-        System.out.println("Balls in table: " + balls.size());
         while(balls.size() > 8) {
             // predict
             for (Ball ball : balls) {
@@ -69,8 +69,13 @@ public class PoolGameSimulation {
             FilesGenerator.writeAnimationFile(FILENAME, ++i, balls, List.of(holes));
             time += INTEGRATION_STEP;
         }
-        System.out.println("Balls in table: " + balls.size());
-        System.out.println("Time to enter half balls: " + time);
+
+        try {
+            FilesGenerator.writeTimeFile(time, TIME_FILENAME);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private static void initializeBalls() {
