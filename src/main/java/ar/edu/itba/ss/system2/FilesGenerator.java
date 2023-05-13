@@ -1,6 +1,7 @@
 package ar.edu.itba.ss.system2;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -8,14 +9,14 @@ import java.util.List;
 public class FilesGenerator {
 
 
-    public static void writeAnimationFile(String file, int time,
-                                          List<Ball> ballsList) {
+    public static void writeAnimationFile(String fileFullPath, int time,
+                                          List<Ball> ballsList,
+                                          List<Ball> holesList) {
         try (BufferedWriter writer = new BufferedWriter(
-                new FileWriter(file, true))) {
-            writeAnimationFileLines(time, writer, ballsList);
+                new FileWriter(fileFullPath, true))) {
+            writeAnimationFileLines(time, writer, ballsList, holesList);
         } catch (Exception e) {
             System.err.println("Error while writing animation file");
-            System.out.println(e);
         }
     }
 
@@ -39,21 +40,23 @@ public class FilesGenerator {
                     .append(String.valueOf(ball.getColorR())).append("\t")
                     .append(String.valueOf(ball.getColorG())).append("\t")
                     .append(String.valueOf(ball.getColorB()))
-                    .append(String.valueOf(ball.getColorG())).append("\t")
+//                    .append(String.valueOf(ball.getColorG())).append("\t")
                     .append(String.valueOf(ball.getSymbol()))
                     .append("\n");
         }
     }
 
     private static void writeAnimationFileLines(int time, BufferedWriter writer,
-                                                List<Ball> ballsList)
+                                                List<Ball> ballsList,
+                                                List<Ball> holesList)
             throws IOException {
-        int totalBalls = ballsList.size();
+        int totalBalls = ballsList.size() + holesList.size();
         writer.append(String.valueOf(totalBalls))
                 .append("\n")
                 .append("Generation: ")
                 .append(String.valueOf(time))
                 .append("\n");
+        writeCollectionToFileLines(writer, holesList);
         writeCollectionToFileLines(writer, ballsList);
 //        writer.append("\n");
     }

@@ -8,6 +8,7 @@ public class OptimumTimeSearch {
 
     private static final Random random = new Random();
     public static final List<Ball> balls = new ArrayList<>();
+    public static Ball[] holes = new Ball[6];
 
     // To save all positions through time
     public static final Map<Long, List<double[]>> ballsPositions = new HashMap<>();
@@ -22,9 +23,11 @@ public class OptimumTimeSearch {
     public static void main(String[] args) {
         initializeBallsWithEqualConditions();
 
-        balls.forEach(ball -> {
-            System.out.println(ball.getId());
-        });
+        // print positions in holes
+        for (Ball ball : balls) {
+            System.out.println(ball.getId() + " " + ball.getX() + " " + ball.getY());
+        }
+
         for (Ball ball : balls) {
             ballsPositions.put(ball.getId(), new ArrayList<>());
         }
@@ -34,7 +37,7 @@ public class OptimumTimeSearch {
 
     public static void simulate() {
         int i = 0;
-        FilesGenerator.writeAnimationFile(FILENAME, i, balls);
+        FilesGenerator.writeAnimationFile(FILENAME, i, balls, List.of(holes));
 
         for (double actualTime = 0; actualTime < MAX_TIME; actualTime += INTEGRATION_STEP) {
             // predict
@@ -57,7 +60,7 @@ public class OptimumTimeSearch {
                 ballsPositions.get(ball.getId()).add(new double[] {ball.getX(), ball.getY()});
             }
 
-            FilesGenerator.writeAnimationFile(FILENAME, ++i, balls);
+            FilesGenerator.writeAnimationFile(FILENAME, ++i, balls, List.of(holes));
         }
     }
 
@@ -109,6 +112,21 @@ public class OptimumTimeSearch {
                 , 128, 128, 0, "Na"));
 
         perturbBallsWithFixedEpsilon(balls);
+
+        // holes
+        holes[0] = new Ball(0, Utils.tableHeight, 0, 0,
+                Utils.particleRadius * 2, 0, BallType.HOLE, 169, 169, 169, "H");
+        holes[1] = new Ball(Utils.tableWidth / 2, Utils.tableHeight,
+                0, 0, Utils.particleRadius * 2, 0,
+                BallType.HOLE,169, 169, 169,"H");
+        holes[2] = new Ball(Utils.tableWidth, Utils.tableHeight, 0, 0,
+                Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
+        holes[3] = new Ball(0, 0, 0, 0,
+                Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
+        holes[4] = new Ball(Utils.tableWidth / 2, 0, 0, 0,
+                Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
+        holes[5] = new Ball(Utils.tableWidth, 0, 0, 0,
+                Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
     }
 
     public static void perturbBallsWithFixedEpsilon(List<Ball> balls) {

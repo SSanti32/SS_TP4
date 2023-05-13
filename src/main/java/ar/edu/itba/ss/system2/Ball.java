@@ -26,11 +26,11 @@ public class Ball {
 
     private final BallType type;
 
-    private int colorR;
-    private int colorG;
-    private int colorB;
+    private final int colorR;
+    private final int colorG;
+    private final int colorB;
 
-    private String symbol;
+    private final String symbol;
 
     public Ball(double x, double y, double vx, double vy, double radius,
                 double mass, BallType type, int colorR, int colorG,
@@ -104,10 +104,6 @@ public class Ball {
         return forces;
     }
 
-//    public double[] getDeltaR2() {
-//        return deltaR2;
-//    }
-
     public double getRadius() {
         return radius;
     }
@@ -154,21 +150,21 @@ public class Ball {
         }
 
         // Calculate forces with vertical walls
-        if (this.x - this.radius <= 0) {
-            netForce[0] += Utils.k * this.x;
+        if (this.x - this.radius < 0) {
+            netForce[0] += Utils.k * Math.abs(this.x - this.radius);
         }
 
-        if (this.x + this.radius >= Utils.tableWidth) {
-            netForce[0] -= Utils.k * (this.x - Utils.tableWidth);
+        if (this.x + this.radius > Utils.tableWidth) {
+            netForce[0] -= Utils.k * Math.abs(this.x + this.radius - Utils.tableWidth);
         }
 
         // Calculate forces with horizontal walls
-        if (this.y - this.radius <= 0) {
-            netForce[1] += Utils.k * this.y;
+        if (this.y - this.radius < 0) {
+            netForce[1] += Utils.k * Math.abs(this.y - this.radius);
         }
 
-        if (this.y + this.radius >= Utils.tableHeight) {
-            netForce[1] -= Utils.k * (this.y - Utils.tableHeight);
+        if (this.y + this.radius > Utils.tableHeight) {
+            netForce[1] -= Utils.k * Math.abs(this.y + this.radius - Utils.tableHeight);
         }
 
         this.forces = netForce;
