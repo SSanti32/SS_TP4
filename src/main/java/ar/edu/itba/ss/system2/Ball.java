@@ -220,6 +220,14 @@ public class Ball {
         return deltaR2;
     }
 
+    public boolean isInHole(Ball hole) {
+        double distance = Math.sqrt(Math.pow(this.x - hole.getX(), 2) + Math.pow(this.y - hole.getY(), 2));
+        if (distance < (hole.getRadius() + this.radius)) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

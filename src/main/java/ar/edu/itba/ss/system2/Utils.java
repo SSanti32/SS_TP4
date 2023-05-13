@@ -5,16 +5,16 @@ import java.util.Random;
 public class Utils {
 
     public static final Random random = new Random();
-    public static Double tableWidth = 224.0; // m
-    public static Double tableHeight = 112.0; // m
+    public static Double tableWidth = 224.0; // cm
+    public static Double tableHeight = 112.0; // cm
     public static Double particleMass = 0.165; // kg
-    public static Double particleRadius = 2.85; // m
-    public static Double whiteBallInitialPosX = 56.0; // m
-    public static Double whiteBallInitialPosY = 56.0; // m
-    public static Double whiteBallInitialVelX = 100.0; // m/s
+    public static Double particleRadius = 2.85; // cm
+    public static Double whiteBallInitialPosX = 56.0; // cm
+    public static Double whiteBallInitialPosY = 56.0; // cm
+    public static Double whiteBallInitialVelX = 100.0; // cm/s
     public static Double whiteBallInitialVelY = 0.0;
-    public static Double firstBallInitialPosX = 168.0; // m
-    public static Double firstBallInitialPosY = 56.0; // m
+    public static Double firstBallInitialPosX = 168.0; // cm
+    public static Double firstBallInitialPosY = 56.0; // cm
     public static Double topEpsilon = 0.03;
     public static Double bottomEpsilon = 0.02;
 
