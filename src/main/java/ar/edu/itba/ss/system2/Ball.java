@@ -1,5 +1,6 @@
 package ar.edu.itba.ss.system2;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
@@ -172,7 +173,7 @@ public class Ball {
 
     private double[] getForce(double x1, double y1, double x2,
                                      double y2, double radius1, double radius2) {
-        double[] deltaR = Utils.getDeltaR(x1, y1, x2, y2);
+        double[] deltaR = new double[] {x2 - x1, y2 - y1};
         double distance = Math.sqrt(Math.pow(deltaR[0], 2) + Math.pow(deltaR[1], 2));
 
         // return 0 if balls do not collide

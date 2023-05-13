@@ -24,9 +24,9 @@ public class OptimumTimeSearch {
         initializeBallsWithEqualConditions();
 
         // print positions in holes
-        for (Ball ball : balls) {
-            System.out.println(ball.getId() + " " + ball.getX() + " " + ball.getY());
-        }
+//        for (Ball ball : balls) {
+//            System.out.println(ball.getId() + " " + ball.getX() + " " + ball.getY());
+//        }
 
         for (Ball ball : balls) {
             ballsPositions.put(ball.getId(), new ArrayList<>());
@@ -131,8 +131,8 @@ public class OptimumTimeSearch {
 
     public static void perturbBallsWithFixedEpsilon(List<Ball> balls) {
         for (int i = 2; i < balls.size(); i++) {
-            double moveInX = (Utils.ballsPerturbance[i - 2][0]/100) * (random.nextBoolean() ? 1 : -1);
-            double moveInY = (Utils.ballsPerturbance[i - 2][1]/100) * (random.nextBoolean() ? 1 : -1);
+            double moveInX = (Utils.ballsPerturbance[i - 2][0]) * (random.nextBoolean() ? 1 : -1);
+            double moveInY = (Utils.ballsPerturbance[i - 2][1]) * (random.nextBoolean() ? 1 : -1);
 
             balls.get(i).setX(balls.get(i).getX() + moveInX);
             balls.get(i).setY(balls.get(i).getY() + moveInY);
