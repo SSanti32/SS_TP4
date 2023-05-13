@@ -17,6 +17,7 @@ public class OptimumTimeSearch {
     public static final double k = 2;
     public static final double INTEGRATION_STEP = Math.pow(10, -k);
     public static final String FILENAME = "animation-1-step" + k + ".txt";
+    public static final String POSITIONS_FILENAME = "positions-1-step" + k + ".txt";
     public final static String RESOURCES_PATH_SISTEM = "src/main/java/resources/";
 
 
@@ -30,9 +31,12 @@ public class OptimumTimeSearch {
 
         for (Ball ball : balls) {
             ballsPositions.put(ball.getId(), new ArrayList<>());
+            ballsPositions.get(ball.getId()).add(new double[] {ball.getX(), ball.getY()});
         }
 
         simulate();
+
+        FilesGenerator.writePositionsFile(POSITIONS_FILENAME, ballsPositions);
     }
 
     public static void simulate() {

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class FilesGenerator {
 
@@ -59,5 +60,24 @@ public class FilesGenerator {
         writeCollectionToFileLines(writer, holesList);
         writeCollectionToFileLines(writer, ballsList);
 //        writer.append("\n");
+    }
+
+    public static void writePositionsFile(String filename, Map<Long, List<double[]>> ballsPositions) {
+        try (BufferedWriter writer = new BufferedWriter(
+                new FileWriter(filename, true))) {
+            for (Map.Entry<Long, List<double[]>> entry : ballsPositions.entrySet()) {
+                writer.append(String.valueOf(entry.getKey()))
+                        .append("\t");
+                for (double[] position : entry.getValue()) {
+                    writer.append(String.valueOf(position[0]))
+                            .append("\t")
+                            .append(String.valueOf(position[1]))
+                            .append("\t");
+                }
+                writer.append("\n");
+            }
+        } catch (Exception e) {
+            System.err.println("Error while writing animation file");
+        }
     }
 }
