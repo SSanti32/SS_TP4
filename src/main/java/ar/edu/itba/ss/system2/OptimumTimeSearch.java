@@ -8,13 +8,13 @@ public class OptimumTimeSearch {
 
     private static final Random random = new Random();
     public static final List<Ball> balls = new ArrayList<>();
-    public static Ball[] holes = new Ball[6];
+    public static Ball[] holes = new Ball[4];
 
     // To save all positions through time
     public static final Map<Long, List<double[]>> ballsPositions = new HashMap<>();
 
     public static final double MAX_TIME = 100;
-    public static final double k = 2;
+    public static final double k = 5;
     public static final double INTEGRATION_STEP = Math.pow(10, -k);
     public static final String FILENAME = "animation-1-step" + k + ".txt";
     public static final String POSITIONS_FILENAME = "positions-1-step" + k + ".txt";
@@ -36,6 +36,7 @@ public class OptimumTimeSearch {
 
     public static void simulate() {
         int i = 0;
+        int gen = 0;
         FilesGenerator.writeAnimationFile(FILENAME, i, balls, List.of(holes));
 
         for (double actualTime = 0; actualTime < MAX_TIME; actualTime += INTEGRATION_STEP) {
@@ -54,12 +55,15 @@ public class OptimumTimeSearch {
                 ball.gearCorrect(INTEGRATION_STEP);
             }
 
-            // Save the current state of the system
-            for (Ball ball : balls) {
-                ballsPositions.get(ball.getId()).add(new double[] {ball.getX(), ball.getY()});
+            if (gen % 100 == 0) {
+                // Save the current state of the system
+                for (Ball ball : balls) {
+                    ballsPositions.get(ball.getId()).add(new double[]{ball.getX(), ball.getY()});
+                }
             }
 
             FilesGenerator.writeAnimationFile(FILENAME, ++i, balls, List.of(holes));
+            gen++;
         }
     }
 
@@ -115,16 +119,11 @@ public class OptimumTimeSearch {
         // holes
         holes[0] = new Ball(0, Utils.tableHeight, 0, 0,
                 Utils.particleRadius * 2, 0, BallType.HOLE, 169, 169, 169, "H");
-        holes[1] = new Ball(Utils.tableWidth / 2, Utils.tableHeight,
-                0, 0, Utils.particleRadius * 2, 0,
-                BallType.HOLE,169, 169, 169,"H");
-        holes[2] = new Ball(Utils.tableWidth, Utils.tableHeight, 0, 0,
+        holes[1] = new Ball(Utils.tableWidth, Utils.tableHeight, 0, 0,
                 Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
-        holes[3] = new Ball(0, 0, 0, 0,
+        holes[2] = new Ball(0, 0, 0, 0,
                 Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
-        holes[4] = new Ball(Utils.tableWidth / 2, 0, 0, 0,
-                Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
-        holes[5] = new Ball(Utils.tableWidth, 0, 0, 0,
+        holes[3] = new Ball(Utils.tableWidth, 0, 0, 0,
                 Utils.particleRadius * 2, 0, BallType.HOLE,169, 169, 169, "H");
     }
 

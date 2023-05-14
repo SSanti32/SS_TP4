@@ -39,10 +39,9 @@ public class FilesGenerator {
                     .append("\t")
                     .append(String.valueOf(ball.getMass()))
                     .append("\t")
-                    .append(String.valueOf(ball.getColorR())).append("\t")
-                    .append(String.valueOf(ball.getColorG())).append("\t")
-                    .append(String.valueOf(ball.getColorB()))
+//                    .append(String.valueOf(ball.getColorR())).append("\t")
 //                    .append(String.valueOf(ball.getColorG())).append("\t")
+//                    .append(String.valueOf(ball.getColorB())).append("\t")
                     .append(String.valueOf(ball.getSymbol()))
                     .append("\n");
         }
@@ -67,8 +66,8 @@ public class FilesGenerator {
         try (BufferedWriter writer = new BufferedWriter(
                 new FileWriter(filename, true))) {
             for (Map.Entry<Long, List<double[]>> entry : ballsPositions.entrySet()) {
-                writer.append(String.valueOf(entry.getKey()))
-                        .append("\t");
+//                writer.append(String.valueOf(entry.getKey()))
+//                        .append("\t");
                 for (double[] position : entry.getValue()) {
                     writer.append(String.valueOf(position[0]))
                             .append("\t")

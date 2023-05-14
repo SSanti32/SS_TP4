@@ -18,7 +18,7 @@ public class PoolGameSimulation {
     public static final double k = 3;
     public static final double INTEGRATION_STEP = Math.pow(10, -k);
     public static final String FILENAME = "animation-2-step" + k + ".txt";
-    public static final String TIME_FILENAME = "time-2-step" + k + ".txt";
+    public static final String TIME_FILENAME = "time-2-pos" + Utils.whiteBallInitialPosY + ".txt";
     public final static String RESOURCES_PATH_SISTEM = "src/main/java/resources/";
 
 
