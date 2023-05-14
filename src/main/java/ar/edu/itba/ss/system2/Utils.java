@@ -10,7 +10,7 @@ public class Utils {
     public static Double particleMass = 0.165; // kg
     public static Double particleRadius = 2.85; // cm
     public static Double whiteBallInitialPosX = 56.0; // cm
-    public static Double whiteBallInitialPosY = 52.0; // cm
+    public static Double whiteBallInitialPosY = 48.0; // cm
     public static Double whiteBallInitialVelX = 100.0; // cm/s
     public static Double whiteBallInitialVelY = 0.0;
     public static Double firstBallInitialPosX = 168.0; // cm

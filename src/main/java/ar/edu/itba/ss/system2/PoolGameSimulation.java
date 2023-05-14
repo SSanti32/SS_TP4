@@ -144,12 +144,15 @@ public class PoolGameSimulation {
     }
 
     private static void perturbBall(Ball ball) {
-        double epsilon = Utils.bottomEpsilon + (Utils.topEpsilon - Utils.bottomEpsilon) * random.nextDouble();
-        double moveInX = epsilon * (random.nextBoolean() ? 1 : -1);
-        double moveInY = epsilon * (random.nextBoolean() ? 1 : -1);
+        //Avoid perturbing the white ball
+        if (ball.getX() != 56.0) {
+            double epsilon = Utils.bottomEpsilon + (Utils.topEpsilon - Utils.bottomEpsilon) * random.nextDouble();
+            double moveInX = epsilon * (random.nextBoolean() ? 1 : -1);
+            double moveInY = epsilon * (random.nextBoolean() ? 1 : -1);
 
-        ball.setX(ball.getX() + moveInX);
-        ball.setY(ball.getY() + moveInY);
+            ball.setX(ball.getX() + moveInX);
+            ball.setY(ball.getY() + moveInY);
+        }
     }
 
     private static List<Ball> getBallsInTable() {
