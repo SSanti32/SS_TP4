@@ -32,9 +32,6 @@ public class DampedOscillator {
         double four = Math.pow(two - three, 0.5);
         double five = Math.cos(four * t);
         return amplitude * one * five;
-//        return amplitude * Math.exp(-(gamma / 2 * mass) * t) * Math.cos(
-//                Math.pow(k / mass - Math.pow(gamma, 2) / 4 * Math.pow(mass, 2),
-//                        0.5) * t);
     }
 
     public double f(double r, double v) {
@@ -111,7 +108,6 @@ public class DampedOscillator {
         double currentR = r0;
         double currentV = v0;
         double nextR;
-//        System.out.println(currentR);
         FilesParser.writeOutputFile(fileOutput, currentR);
         FilesParser.writeOutputFile(analyticalOutput,
                 analyticalSolution(0));
@@ -124,7 +120,6 @@ public class DampedOscillator {
             FilesParser.writeOutputFile(fileOutput, currentR);
             FilesParser.writeOutputFile(analyticalOutput,
                     analyticalSolution(t));
-//            System.out.println(currentR);
         }
     }
 
@@ -135,7 +130,6 @@ public class DampedOscillator {
         double currentR = r0;
         double currentV = v0;
         double nextR, nextV, nextA, prevA, currentA;
-//        System.out.println(currentR);
         FilesParser.writeOutputFile(fileOutput, currentR);
         FilesParser.writeOutputFile(analyticalOutput,
                 analyticalSolution(0));
@@ -150,10 +144,8 @@ public class DampedOscillator {
             currentR = nextR;
             prevV = currentV;
             currentV = nextV;
-//            System.out.println(currentR);
             FilesParser.writeOutputFile(fileOutput, currentR);
-//            FilesParser.writeOutputFile(analyticalOutput,
-//                    analyticalSolution(t));
+
         }
 
     }
@@ -167,7 +159,6 @@ public class DampedOscillator {
         FilesParser.writeOutputFile(fileOutput, r0);
         FilesParser.writeOutputFile(analyticalOutput,
                 analyticalSolution(0));
-//        System.out.println(r0);
         for (double t = 0; t < t_f; t += step) {
             //Predict, evaluate and correct
             r = gearPredict(r, step);
@@ -176,28 +167,21 @@ public class DampedOscillator {
             double deltaR2 = deltaAmp * (step * step) / 2;
             gearCorrect(r, deltaR2, alphas, step);
             FilesParser.writeOutputFile(fileOutput, r[0]);
-//            FilesParser.writeOutputFile(analyticalOutput,
-//                  analyticalSolution(t));
-//            System.out.println(r[0]);
         }
     }
 
 
     public static void main(String[] args) throws IOException {
         DampedOscillator oscillator =
-                new DampedOscillator(70, 10e4, 100, 0.000001, 5);
+                new DampedOscillator(70, 10e4, 100, 0.001, 5);
         File directory = new File(FilesParser.RESOURCES_PATH_SISTEM_1);
         directory.mkdir();
-        File verletAlgFile =
-                new File(directory + File.separator + "verletAlg.txt");
+        File verletAlgFile = new File(directory + File.separator + "verletAlg.txt");
         File beemanAlgFile = new File(directory + File.separator + "beemanAlg.txt");
         File gearAlgFile = new File(directory + File.separator + "gearAlg.txt");
-        File analyticalVerletFile = new File(directory + File.separator +
-                "analyticalVerlet.txt");
-        File analyticalBeemanFile = new File(directory + File.separator +
-                "analyticalBeeman.txt");
-        File analyticalGearFile = new File(directory + File.separator +
-                "analyticalGear.txt");
+        File analyticalVerletFile = new File(directory + File.separator + "analyticalVerlet.txt");
+        File analyticalBeemanFile = new File(directory + File.separator + "analyticalBeeman.txt");
+        File analyticalGearFile = new File(directory + File.separator + "analyticalGear.txt");
 
         System.out.println("Deleting files: ");
         FilesParser.deleteFileContent(analyticalVerletFile);

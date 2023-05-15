@@ -57,10 +57,6 @@ def graph_errors(t, verletAlg, beemanAlg, gearAlg, analytical):
     plt.show()
 
 def plot_mse(dt, verlet, beeman, gear):
-    # dt = [0.00001, 0.0001, 0.001, 0.01]
-    # verlet_mse = [2.479609447970792e-08, 2.494471191655803e-06, 0.0002646126860683962, 0.04247363293025847]
-    # beeman_mse = [1.0003756052640882e-08, 1.0078147812516072e-06, 0.00010851723421743886, 0.02087391850437894]
-    # gear_mse = [9.995506246101396e-09, 9.995335450364986e-07, 9.99236901364175e-05, 0.010084623044342446]
     plt.plot(dt, verlet, label="Verlet", marker="o")
     plt.plot(dt, beeman, label="Beeman", marker="o")
     plt.plot(dt, gear, label="Gear", marker="o")
