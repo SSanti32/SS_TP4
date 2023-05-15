@@ -60,13 +60,15 @@ public class PoolGameSimulation {
 
             // Save the current state of the system
             for (Ball ball : balls) {
-                ballsPositions.get(ball.getId()).add(new double[] {ball.getX(), ball.getY()});
+                ballsPositions.get(ball.getId()).add(new double[]{ball.getX(), ball.getY()});
             }
 
             // Delete balls that are in holes
             balls = getBallsInTable();
 
+
             FilesGenerator.writeAnimationFile(FILENAME, ++i, balls, List.of(holes));
+
             time += INTEGRATION_STEP;
         }
 
